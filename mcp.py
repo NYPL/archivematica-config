@@ -27,5 +27,10 @@ class MCP:
 
 
   def validate_mcp(self):
-    return False
+    mcp_schema_doc = etree.parse('mcp.xsd')
+    mcp_schema = etree.XMLSchema(mcp_schema_doc)
+    if mcp_schema.validate(self.tree):
+      return True
+    else:
+      return False
 
