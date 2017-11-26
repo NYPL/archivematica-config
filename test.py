@@ -81,8 +81,8 @@ class TranslateMCP(SelfCleaningTestCase):
     not_mcp_path = os.path.join(self.tmpdir, not_mcp_filename)
     
     mcp_level1 = etree.Element(MCP_LEVEL1)
-    not_mcp_level2 = etree.SubElement(not_mcp_level1, MCP_LEVEL2[:-1])
-    not_mcp_tree = etree.ElementTree(not_mcp_level1)
+    not_mcp_level2 = etree.SubElement(mcp_level1, MCP_LEVEL2[:-1])
+    not_mcp_tree = etree.ElementTree(mcp_level1)
     not_mcp_tree.write(not_mcp_path)
 
     with self.assertRaises(mcp.MCPError) as error_catcher:
@@ -97,10 +97,10 @@ class TranslateMCP(SelfCleaningTestCase):
     not_mcp_path = os.path.join(self.tmpdir, not_mcp_filename)
     
     mcp_level1 = etree.Element(MCP_LEVEL1)
-    mcp_level2 = etree.SubElement(not_mcp_level1, MCP_LEVEL2)
+    mcp_level2 = etree.SubElement(mcp_level1, MCP_LEVEL2)
     for i in range(1,4):
-      etree.SubElement(not_mcp_level2, MCP_LEVEL3[:-1])
-    not_mcp_tree = etree.ElementTree(not_mcp_level1)
+      etree.SubElement(mcp_level2, MCP_LEVEL3[:-1])
+    not_mcp_tree = etree.ElementTree(mcp_level1)
     not_mcp_tree.write(not_mcp_path)
 
     with self.assertRaises(mcp.MCPError) as error_catcher:
@@ -115,12 +115,12 @@ class TranslateMCP(SelfCleaningTestCase):
     not_mcp_path = os.path.join(self.tmpdir, not_mcp_filename)
     
     mcp_level1 = etree.Element(MCP_LEVEL1)
-    mcp_level2 = etree.SubElement(not_mcp_level1, MCP_LEVEL2)
+    mcp_level2 = etree.SubElement(mcp_level1, MCP_LEVEL2)
     for i in range(1,4):
-      mcp_level3 = etree.SubElement(not_mcp_level2, MCP_LEVEL3)
-      etree.SubElement(not_mcp_level3, MCP_LEVEL4A[:-1])
-      etree.SubElement(not_mcp_level3, MCP_LEVEL4B[:-1])
-    not_mcp_tree = etree.ElementTree(not_mcp_level1)
+      mcp_level3 = etree.SubElement(mcp_level2, MCP_LEVEL3)
+      etree.SubElement(mcp_level3, MCP_LEVEL4A[:-1])
+      etree.SubElement(mcp_level3, MCP_LEVEL4B[:-1])
+    not_mcp_tree = etree.ElementTree(mcp_level1)
     not_mcp_tree.write(not_mcp_path)
 
     with self.assertRaises(mcp.MCPError) as error_catcher:
@@ -131,25 +131,25 @@ class TranslateMCP(SelfCleaningTestCase):
 
 
   def test_valid_mcp(self):
-    mcp_filename = 'a.notmcp'
-    mcp_path = os.path.join(self.tmpdir, not_mcp_filename)
+    mcp_filename = 'a.mcp'
+    mcp_path = os.path.join(self.tmpdir, mcp_filename)
     
     mcp_level1 = etree.Element(MCP_LEVEL1)
-    mcp_level2 = etree.SubElement(not_mcp_level1, MCP_LEVEL2)
+    mcp_level2 = etree.SubElement(mcp_level1, MCP_LEVEL2)
     for i in range(1,4):
-      mcp_level3 = etree.SubElement(not_mcp_level2, MCP_LEVEL3)
-      mcp_level4a = etree.SubElement(not_mcp_level3, MCP_LEVEL4A)
+      mcp_level3 = etree.SubElement(mcp_level2, MCP_LEVEL3)
+      mcp_level4a = etree.SubElement(mcp_level3, MCP_LEVEL4A)
       mcp_level4a.text = str(uuid.uuid4())
-      mcp_level4b = etree.SubElement(not_mcp_level3, MCP_LEVEL4B)
+      mcp_level4b = etree.SubElement(mcp_level3, MCP_LEVEL4B)
       mcp_level4b.text = str(uuid.uuid4())
-    mcp_tree = etree.ElementTree(not_mcp_level1)
-    mcp_tree.write(not_mcp_path)
+    mcp_tree = etree.ElementTree(mcp_level1)
+    mcp_tree.write(mcp_path)
 
-    valid_mcp = mcp.MCP(path = not_mcp_path)
+    valid_mcp = mcp.MCP(path = mcp_path)
 
     self.assertEqual(valid_mcp.filename, mcp_filename)
     self.assertEqual(valid_mcp.path, mcp_path)
-    self.assertTrue(valid_mcp.validate())
+    self.assertTrue(valid_mcp.validate_mcp())
 
 
 if __name__ == '__main__':
