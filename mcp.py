@@ -1,5 +1,6 @@
 import os
 from lxml import etree
+import pymysql
 import re
 
 
@@ -49,6 +50,19 @@ class MCP:
       uuids.append(uuid_dict)
 
     return uuids
+
+
+  def set_uuid_labels(self, replacement_dict):
+    choices = etree.XPath("//preconfiguredChoice")
+
+    for element in choices(self.tree):
+      for subelement in element.getchildren():
+        try:
+          attrib = replacement_dict[subelement.text]
+        except:
+          attrib = None
+        if attrib:
+          subelement.attrib['label'] = attrib
 
 
 
