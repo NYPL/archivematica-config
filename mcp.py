@@ -1,5 +1,6 @@
 import os
 from lxml import etree
+import re
 
 
 class MCPError(Exception):
@@ -33,4 +34,21 @@ class MCP:
       return True
     else:
       return False
+
+
+  def get_uuids(self):
+    uuid_regex = re.compile('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
+    choices = etree.XPath("//preconfiguredChoice")
+    uuids = []
+
+    for element in choices(self.tree):
+      uuid_dict = {}
+      for subelement in element.getchildren():
+        if uuid_regex.match(subelement.text):
+          uuid_dict[subelement.tag] = subelement.text
+      uuids.append(uuid_dict)
+
+    return uuids
+
+
 
