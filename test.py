@@ -136,6 +136,34 @@ class TranslateMCP(SelfCleaningTestCase):
     self.assertTrue(valid_mcp.validate_mcp())
 
 
+  def test_return_all_uuids(self):
+    mcp_filename = 'a.mcp'
+    mcp_path = os.path.join(self.tmpdir, mcp_filename)
+    
+    mcp_tree = generate_fake_mcp(MCP_LEVEL1, MCP_LEVEL2, MCP_LEVEL3,
+      MCP_LEVEL4A, MCP_LEVEL4B)
+    mcp_tree.write(mcp_path)
+
+    valid_mcp = mcp.MCP(path = mcp_path)
+
+    uuids = valid_mcp.get_uuids()
+
+    self.assertEqual(len(uuids), 3)
+
+    def is_uuid(value):
+      try:
+        val = uuid.UUID(value)
+      except ValueError:
+          return False
+      return True
+
+    for choice in uuids:
+      self.assertTrue(len(choice.keys()), 2)
+      for uuid_string in choice.values():
+        self.assertTrue(is_uuid(uuid_string))
+
+
+
 
 def generate_fake_mcp(level1, level2, level3, level4a, level4b):
   mcp_level1 = etree.Element(level1)
