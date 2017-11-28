@@ -5,9 +5,12 @@ import argparse
 import pymysql
 import configparser
 
+DB_CONFIG_PATH = '/etc/archivematica/archivematicaCommon/dbsettings'
+PROCESSING_MCP_PATH = '/var/archivematica/sharedDirectory/sharedMicroServiceTasksConfigs/processingMCPConfigs/'
+
 def _parse_db_config():
   configParser = configparser.RawConfigParser()   
-  configFilePath = 'dbsettings'
+  configFilePath = DB_CONFIG_PATH
   configParser.read(configFilePath)
 
   return configParser
@@ -61,8 +64,11 @@ if __name__ == '__main__':
 
   if args.dir:
     directory_path = os.path.abspath(args.dir)
-    for path in glob.glob(os.path.join(directory_path, '*ProcessingMCP.xml')):
-      mcps.append(path)
+  else:
+    directory_path = PROCESSING_MCP_PATH
+    
+  for path in glob.glob(os.path.join(directory_path, '*ProcessingMCP.xml')):
+    mcps.append(path)
 
   if args.file:
     mcps.append(os.path.abspath(args.file))
