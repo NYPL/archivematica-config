@@ -63,6 +63,11 @@ class MCP:
           attrib = None
         if attrib:
           subelement.attrib['label'] = attrib
+       
 
+  def write(self, output_path):
+    if not os.path.exists(output_path):
+      os.makedirs(output_path)
+    self.tree.write(os.path.join(output_path, self.filename))
 
 
