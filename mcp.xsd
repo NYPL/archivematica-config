@@ -6,11 +6,33 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:attribute name="label" type="xs:string"/>
+
+  <xs:element name="appliesTo">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="GUID">
+          <xs:anyAttribute processContents="lax"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="goToChain">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="GUID">
+          <xs:anyAttribute processContents="lax"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
   <xs:element name="preconfiguredChoice">
     <xs:complexType>
       <xs:all>
-        <xs:element name="appliesTo" type="GUID"/>
-        <xs:element name="goToChain" type="GUID"/>
+        <xs:element ref="appliesTo"/>
+        <xs:element ref="goToChain"/>
       </xs:all>
     </xs:complexType>
   </xs:element>
