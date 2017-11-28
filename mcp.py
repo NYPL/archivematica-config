@@ -17,15 +17,15 @@ class MCP:
         self.path = path
         self.filename = os.path.basename(path)
       else:
-        raise OSError('No such file or directory: {}'.format(path))
+        raise OSError('No such file or directory: %s' % (path))
 
       try:
         self.tree = etree.parse(self.path)
       except etree.XMLSyntaxError:
-        raise MCPError('{} does not contain valid XML'.format(self.filename))
+        raise MCPError('%s does not contain valid XML' % (self.filename))
 
       if not self.validate_mcp():
-        raise MCPError('{} does not appear to be a valid Archivematica MCP'.format(self.filename))
+        raise MCPError('%s does not appear to be a valid Archivematica MCP' % (self.filename))
 
 
   def validate_mcp(self):
@@ -63,7 +63,7 @@ class MCP:
           attrib = None
         if attrib:
           subelement.attrib['label'] = attrib
-       
+
 
   def write(self, output_path):
     if not os.path.exists(output_path):

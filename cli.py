@@ -10,6 +10,8 @@ def _parse_db_config():
   configFilePath = 'dbsettings'
   configParser.read(configFilePath)
 
+  return configParser
+
 
 def _collect_db_data(configParser):
   try:
@@ -31,18 +33,21 @@ def _collect_db_data(configParser):
   links = mcp_query("SELECT pk, microserviceGroup FROM MicroServiceChainLinks", cur)
   chain_choices = mcp_query("SELECT pk, description FROM MicroServiceChoiceReplacementDic", cur)
   chains = mcp_query("SELECT pk, description FROM MicroServiceChains", cur)
-  return {**links, **chain_choices, **chains}
+
+  mcp_dict = {}
+  for k,v in links.items()+chain_choices.items()+chains.items():
+    mcp_dict[k]= v
+    
+  return mcp_dict
 
 
 def _make_parser():
   parser = argparse.ArgumentParser()
   parser.description = "add human readable text to archivematica MCPs"
   parser.add_argument("-f", "-x", "--file",
-    help = "path to an MCP file",
-    required = True)
+    help = "path to an MCP file")
   parser.add_argument("-d", "--dir",
-    help = "path to a directory of MCP files",
-    required = True)
+    help = "path to a directory of MCP files")
   parser.add_argument("-o", "--output",
     help = "directory to save output",
     default = '.')
@@ -62,8 +67,10 @@ if __name__ == '__main__':
   if args.file:
     mcps.append(os.path.abspath(args.file))
 
+  configParser = _parse_db_config()
+  mcp_dict = _collect_db_data(configParser)
+
   for path in set(mcps):
     mcp_data = mcp.MCP(path)
     mcp_data.set_uuid_labels(mcp_dict)
-    print(mcp_data.validate_mcp())
     mcp_data.write(args.output)
