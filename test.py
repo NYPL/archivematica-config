@@ -184,6 +184,19 @@ class TranslateMCP(SelfCleaningTestCase):
     self.assertTrue(all_labels(valid_mcp.tree), ['test_label'])
 
 
+  def test_write_xml(self):
+    mcp_filename = 'a.mcp'
+    mcp_path = os.path.join(self.tmpdir, mcp_filename)
+    
+    mcp_tree = generate_fake_mcp(MCP_LEVEL1, MCP_LEVEL2, MCP_LEVEL3,
+      MCP_LEVEL4A, MCP_LEVEL4B)
+    mcp_tree.write(mcp_path)
+
+    valid_mcp = mcp.MCP(path = mcp_path)
+
+    new_path = os.path.join(self.tmpdir, 'a/bunch/of/fake/directories/', mcp_filename)
+    valid_mcp.write(new_path)
+    self.assertTrue(os.path.exists(new_path))
 
 
 def generate_fake_mcp(level1, level2, level3, level4a, level4b):
