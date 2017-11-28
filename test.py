@@ -65,9 +65,9 @@ class TranslateMCP(SelfCleaningTestCase):
     not_mcp_filename = 'a.notmcp'
     not_mcp_path = os.path.join(self.tmpdir, not_mcp_filename)
 
-    not_mcp_level1 = etree.Element(MCP_LEVEL1[:-1])
-    not_mcp_tree = etree.ElementTree(not_mcp_level1)
-    not_mcp_tree.write(not_mcp_path)
+    mcp_tree = generate_fake_mcp(MCP_LEVEL1[:-1], MCP_LEVEL2, MCP_LEVEL3,
+      MCP_LEVEL4A, MCP_LEVEL4B)
+    mcp_tree.write(not_mcp_path)
 
     with self.assertRaises(mcp.MCPError) as error_catcher:
       mcp.MCP(path = not_mcp_path)
@@ -80,10 +80,9 @@ class TranslateMCP(SelfCleaningTestCase):
     not_mcp_filename = 'a.notmcp'
     not_mcp_path = os.path.join(self.tmpdir, not_mcp_filename)
     
-    mcp_level1 = etree.Element(MCP_LEVEL1)
-    not_mcp_level2 = etree.SubElement(mcp_level1, MCP_LEVEL2[:-1])
-    not_mcp_tree = etree.ElementTree(mcp_level1)
-    not_mcp_tree.write(not_mcp_path)
+    mcp_tree = generate_fake_mcp(MCP_LEVEL1, MCP_LEVEL2[:-1], MCP_LEVEL3,
+      MCP_LEVEL4A, MCP_LEVEL4B)
+    mcp_tree.write(not_mcp_path)
 
     with self.assertRaises(mcp.MCPError) as error_catcher:
       mcp.MCP(path = not_mcp_path)
@@ -96,12 +95,9 @@ class TranslateMCP(SelfCleaningTestCase):
     not_mcp_filename = 'a.notmcp'
     not_mcp_path = os.path.join(self.tmpdir, not_mcp_filename)
     
-    mcp_level1 = etree.Element(MCP_LEVEL1)
-    mcp_level2 = etree.SubElement(mcp_level1, MCP_LEVEL2)
-    for i in range(1,4):
-      etree.SubElement(mcp_level2, MCP_LEVEL3[:-1])
-    not_mcp_tree = etree.ElementTree(mcp_level1)
-    not_mcp_tree.write(not_mcp_path)
+    mcp_tree = generate_fake_mcp(MCP_LEVEL1, MCP_LEVEL2, MCP_LEVEL3[:-1],
+      MCP_LEVEL4A, MCP_LEVEL4B)
+    mcp_tree.write(not_mcp_path)
 
     with self.assertRaises(mcp.MCPError) as error_catcher:
       mcp.MCP(path = not_mcp_path)
@@ -114,14 +110,9 @@ class TranslateMCP(SelfCleaningTestCase):
     not_mcp_filename = 'a.notmcp'
     not_mcp_path = os.path.join(self.tmpdir, not_mcp_filename)
     
-    mcp_level1 = etree.Element(MCP_LEVEL1)
-    mcp_level2 = etree.SubElement(mcp_level1, MCP_LEVEL2)
-    for i in range(1,4):
-      mcp_level3 = etree.SubElement(mcp_level2, MCP_LEVEL3)
-      etree.SubElement(mcp_level3, MCP_LEVEL4A[:-1])
-      etree.SubElement(mcp_level3, MCP_LEVEL4B[:-1])
-    not_mcp_tree = etree.ElementTree(mcp_level1)
-    not_mcp_tree.write(not_mcp_path)
+    mcp_tree = generate_fake_mcp(MCP_LEVEL1, MCP_LEVEL2, MCP_LEVEL3,
+      MCP_LEVEL4A[:-1], MCP_LEVEL4B)
+    mcp_tree.write(not_mcp_path)
 
     with self.assertRaises(mcp.MCPError) as error_catcher:
       mcp.MCP(path = not_mcp_path)
@@ -134,15 +125,8 @@ class TranslateMCP(SelfCleaningTestCase):
     mcp_filename = 'a.mcp'
     mcp_path = os.path.join(self.tmpdir, mcp_filename)
     
-    mcp_level1 = etree.Element(MCP_LEVEL1)
-    mcp_level2 = etree.SubElement(mcp_level1, MCP_LEVEL2)
-    for i in range(1,4):
-      mcp_level3 = etree.SubElement(mcp_level2, MCP_LEVEL3)
-      mcp_level4a = etree.SubElement(mcp_level3, MCP_LEVEL4A)
-      mcp_level4a.text = str(uuid.uuid4())
-      mcp_level4b = etree.SubElement(mcp_level3, MCP_LEVEL4B)
-      mcp_level4b.text = str(uuid.uuid4())
-    mcp_tree = etree.ElementTree(mcp_level1)
+    mcp_tree = generate_fake_mcp(MCP_LEVEL1, MCP_LEVEL2, MCP_LEVEL3,
+      MCP_LEVEL4A, MCP_LEVEL4B)
     mcp_tree.write(mcp_path)
 
     valid_mcp = mcp.MCP(path = mcp_path)
@@ -151,6 +135,19 @@ class TranslateMCP(SelfCleaningTestCase):
     self.assertEqual(valid_mcp.path, mcp_path)
     self.assertTrue(valid_mcp.validate_mcp())
 
+
+
+def generate_fake_mcp(level1, level2, level3, level4a, level4b):
+  mcp_level1 = etree.Element(level1)
+  mcp_level2 = etree.SubElement(mcp_level1, level2)
+  for i in range(1,4):
+    mcp_level3 = etree.SubElement(mcp_level2, level3)
+    mcp_level4a = etree.SubElement(mcp_level3, level4a)
+    mcp_level4a.text = str(uuid.uuid4())
+    mcp_level4b = etree.SubElement(mcp_level3, level4b)
+    mcp_level4b.text = str(uuid.uuid4())
+  mcp_tree = etree.ElementTree(mcp_level1)
+  return etree.ElementTree(mcp_level1)
 
 if __name__ == '__main__':
     unittest.main()
